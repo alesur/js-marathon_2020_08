@@ -39,24 +39,24 @@
     enemy.renderHP();
   }
 
-  function renderHP(renderHP) {
+  function renderHP() {
     this.elHP.innerText = this.damageHP + " / " + this.defaultHP;
     this.renderProgressbarHP();
   }
 
-  function renderProgressbarHP(renderProgressbarHP) {
+  function renderProgressbarHP() {
     this.elProgressbar.style.width = this.damageHP + "%";
   }
 
-  function changeHP(changeHP) {
-    if (this.damageHP < changeHP) {
+  function changeHP(count) {
+    if (this.damageHP < count) {
       this.damageHP = 0;
       alert("Бедный " + this.name + " проиграл бой!");
       $btn.disabled = true;
       $btn2.disabled = true;
 
     } else {
-      this.damageHP -= changeHP;
+      this.damageHP -= count;
     }
     this.renderHP();
   }
