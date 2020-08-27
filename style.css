@@ -518,7 +518,7 @@ h1 {
     padding: 6px 0;
 }
 
-.logs {
+#logs {
     background: white;
     border: 2px solid #ffc55b;
     border-radius: 10px;
