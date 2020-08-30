@@ -122,7 +122,8 @@
       remaining: function (button) {
         btnClickLimit--;
         if (btnClickLimit <= 0) button.disabled = true;
-        console.log(`${btnClickLimit}`);
+        button.getElementsByClassName('remaining')[0].innerText = (`Осталось ${btnClickLimit} Удар(ов)`);
+       // console.log(`${btnClickLimit}`);
       },
     };
   }
