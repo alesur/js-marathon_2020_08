@@ -1,7 +1,9 @@
 (function () {
   const $btn = document.getElementById("btn-jolt");
   const $btn2 = document.getElementById("btn-wave");
-
+  const totalClick = clickCounter();
+  const bntUsed = clickCounter();
+  const bntUsed2 = clickCounter();
   const character = {
     name: "Pikachu",
     hp: {
@@ -30,10 +32,12 @@
 
   addEventListener("click", function (event) {
     if (event.path[0].id == "btn-jolt") {
-      kickEvent(20);
+      kickEvent(10);
+      bntUsed.remaining($btn);
     }
     if (event.path[0].id == "btn-wave") {
-      kickEvent(50);
+      kickEvent(30);
+      bntUsed2.remaining($btn2);
     }
   });
 
@@ -71,17 +75,19 @@
     this.renderHP();
   }
 
-  function random(num) {
-    return Math.ceil(Math.random() * num);
-  }
+  const random = (num) => Math.ceil(Math.random() * num);
 
   function kickEvent(kickPower) {
+    totalClick.total();
     character.changeHP(random(kickPower));
     enemy.changeHP(random(kickPower));
   }
 
   function generateLog(firstPerson, secondPerson, damage) {
-    const { name, hp: { current, total } } = firstPerson;
+    const {
+      name,
+      hp: { current, total },
+    } = firstPerson;
     const logs = [
       `${name} вспомнил что-то важное, но неожиданно ${secondPerson.name}, не помня себя от испуга, ударил в предплечье врага. -${damage}, [${current}\\${total}]`,
       `${name} поперхнулся, и за это ${secondPerson.name} с испугу приложил прямой удар коленом в лоб врага. -${damage}, [${current}\\${total}]`,
@@ -103,6 +109,22 @@
     const $p = document.createElement("p");
     $p.innerText = logText;
     $logs.insertBefore($p, $logs.children[0]);
+  }
+
+  function clickCounter() {
+    let click = 0;
+    let btnClickLimit = 6;
+    return {
+      total: function () {
+        click++;
+        console.log(`Total button clicks: ${click}`);
+      },
+      remaining: function (button) {
+        btnClickLimit--;
+        if (btnClickLimit <= 0) button.disabled = true;
+        console.log(`${btnClickLimit}`);
+      },
+    };
   }
 
   init();
