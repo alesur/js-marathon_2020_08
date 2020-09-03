@@ -46,8 +46,10 @@ function clickCounter() {
     $logs.insertBefore($p, $logs.children[0]);
   
     if (isDisabled == true) {
-      $btn.disabled = true;
-      $btn2.disabled = true;
+      const disableBtn = document.querySelectorAll("button");
+      disableBtn.forEach(btn => {
+        btn.disabled = true;
+      })
     }
   }
 
