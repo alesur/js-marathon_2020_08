@@ -3,7 +3,7 @@ class Selectors {
     this.elHP = document.getElementById(`health-${name}`);
     this.elProgressbar = document.getElementById(`progressbar-${name}`);
     this.displayName = document.getElementById(`name-${name}`);
-    this.pokemonImg = document.querySelector("." + name);
+    this.pokemonImg = document.getElementById(`sprite-${name}`);
   }
 }
 
@@ -48,7 +48,6 @@ class Pokemon extends Selectors {
     this.hp.current -= count;
     if (this.hp.current <= count) {
       this.hp.current = 0;
-      alert("Бедный " + this.name + " проиграл бой!");
       isDisabled = true;
     }
     this.renderHP();
@@ -57,10 +56,7 @@ class Pokemon extends Selectors {
 
   renderPlayer = () => {
     this.displayName.innerText = this.name;
-    const $img = document.createElement("img");
-    $img.classList.add("sprite");
-    $img.src = this.img;
-    this.pokemonImg.appendChild($img);
+    this.pokemonImg.src = this.img;
   };
 }
 
