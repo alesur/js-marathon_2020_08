@@ -36,7 +36,7 @@ body {
 }
 
 .control {
-    width: 320px;
+    width: 200px;
     height: 260px;
     position: relative;
     margin: 20px;
@@ -535,4 +535,9 @@ h1 {
     font-size: 16px;
     margin-bottom: 15px;
     opacity: 0.8;
+}
+
+.winner {
+    font-size: 22px; 
+    margin: 20px;
 }

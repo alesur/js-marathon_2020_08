@@ -1,94 +1,78 @@
 import Pokemon from "./pokemon.js";
-import random from "./utils.js";
+import { random, clickCounter, generateLog, renderFightLog } from "./utils.js";
+import { pokemons } from "./pokemons.js";
 
-const player1 = new Pokemon({
-  name: "Pikachu",
-  type: "electric",
-  hp: 100,
-  selectors: "character",
-});
+const $control = document.querySelector(".control");
 
-const player2 = new Pokemon({
-  name: "Charmander",
-  type: "fire",
-  hp: 100,
-  selectors: "enemy",
-});
-
-const $btn = document.getElementById("btn-jolt");
-const $btn2 = document.getElementById("btn-wave");
-const totalClick = clickCounter();
-const bntUsed = clickCounter();
-const bntUsed2 = clickCounter();
-
-addEventListener("click", function (event) {
-  if (event.path[0].id == "btn-jolt") {
-    kickEvent(10);
-    bntUsed.remaining($btn);
-  }
-  if (event.path[0].id == "btn-wave") {
-    kickEvent(30);
-    bntUsed2.remaining($btn2);
-  }
-});
-
-function kickEvent(kickPower) {
-  totalClick.total();
-  player1.changeHP(random(kickPower), function (count, isDisabled) {
-    renderFightLog(generateLog(player1, player2, count), isDisabled);
+function startGame() {
+  let pl1 = pokemons[random(pokemons.length) - 1];
+  let pl2 = pokemons[random(pokemons.length) - 1];
+  const player1 = new Pokemon({
+    ...pl1,
+    selectors: "player1",
   });
-  player2.changeHP(random(kickPower), function (count, isDisabled) {
-    renderFightLog(generateLog(player2, player1, count), isDisabled);
+  const player2 = new Pokemon({
+    ...pl2,
+    selectors: "player2",
   });
-}
 
-function renderFightLog(logText, isDisabled) {
-  const $logs = document.querySelector("#logs");
-  const $p = document.createElement("p");
-  $p.innerText = logText;
-  $logs.insertBefore($p, $logs.children[0]);
+  const totalClick = clickCounter();
 
-  console.log(isDisabled);
-  if (isDisabled == true) {
-    $btn.disabled = true;
-    $btn2.disabled = true;
+  player1.attacks.forEach((item) => {
+    const bntUsed = clickCounter();
+    const $btn = document.createElement("button");
+    const $remaining = document.createElement("div");
+    $remaining.classList.add("remaining");
+    $btn.classList.add("button");
+    $btn.innerText = item.name;
+
+    $btn.addEventListener("click", () => {
+      kickEvent(item.maxDamage);
+      bntUsed.remaining($btn);
+    });
+    $control.appendChild($btn);
+    $btn.appendChild($remaining);
+  });
+
+  function kickEvent(kickPower) {
+    totalClick.total();
+    player1.changeHP(random(kickPower), function (count, isDisabled) {
+      renderFightLog(generateLog(player1, player2, count), isDisabled);
+      gameOver(isDisabled, player2);
+    });
+    player2.changeHP(random(kickPower), function (count, isDisabled) {
+      renderFightLog(generateLog(player2, player1, count), isDisabled);
+      gameOver(isDisabled, player1);
+    });
   }
 }
 
-function clickCounter() {
-  let click = 0;
-  let btnClickLimit = 6;
-  return {
-    total: function () {
-      click++;
-    },
-    remaining: function (button) {
-      btnClickLimit--;
-      if (btnClickLimit <= 0) button.disabled = true;
-      button.getElementsByClassName(
-        "remaining"
-      )[0].innerText = `Осталось ${btnClickLimit} Удар(ов)`;
-    },
-  };
+function gameOver(isGameOver, winner) {
+  if (isGameOver == true) {
+    const allButtons = document.querySelectorAll(".control .button");
+    allButtons.forEach(($item) => $item.remove());
+    const $winnerText = document.createElement("div");
+    $winnerText.classList.add("winner");
+    $winnerText.innerText = winner.name + " Won!";
+    $control.appendChild($winnerText);
+    preStart();
+  }
 }
 
-function generateLog(firstPerson, secondPerson, damage) {
-  const {
-    name,
-    hp: { current, total },
-  } = firstPerson;
-  const logs = [
-    `${name} вспомнил что-то важное, но неожиданно ${secondPerson.name}, не помня себя от испуга, ударил в предплечье врага. -${damage}, [${current}\\${total}]`,
-    `${name} поперхнулся, и за это ${secondPerson.name} с испугу приложил прямой удар коленом в лоб врага. -${damage}, [${current}\\${total}]`,
-    `${name} забылся, но в это время наглый ${secondPerson.name}, приняв волевое решение, неслышно подойдя сзади, ударил. -${damage}, [${current}\\${total}]`,
-    `${name} пришел в себя, но неожиданно ${secondPerson.name} случайно нанес мощнейший удар. -${damage}, [${current}\\${total}]`,
-    `${name} поперхнулся, но в это время ${secondPerson.name} нехотя раздробил кулаком <вырезанно цензурой> противника. -${damage}, [${current}\\${total}]`,
-    `${name} удивился, а ${secondPerson.name} пошатнувшись влепил подлый удар. -${damage}, [${current}\\${total}]`,
-    `${name} высморкался, но неожиданно ${secondPerson.name} провел дробящий удар. -${damage}, [${current}\\${total}]`,
-    `${name} пошатнулся, и внезапно наглый ${secondPerson.name} беспричинно ударил в ногу противника -${damage}, [${current}\\${total}]`,
-    `${name} расстроился, как вдруг, неожиданно ${secondPerson.name} случайно влепил стопой в живот соперника. -${damage}, [${current}\\${total}]`,
-    `${name} пытался что-то сказать, но вдруг, неожиданно ${secondPerson.name} со скуки, разбил бровь сопернику. -${damage}, [${current}\\${total}]`,
-  ];
+function preStart() {
+  const $startBtn = document.createElement("button");
+  const $logs = document.getElementById("logs");
+  const $healthClr = document.querySelectorAll(".health");
+  $startBtn.classList.add("button");
+  $startBtn.innerText = "New Game";
 
-  return logs[random(logs.length) - 1];
+  $control.appendChild($startBtn);
+  $startBtn.addEventListener("click", () => {
+    $control.innerText = "";
+    $logs.innerHTML = "<p><b>Push buttons to start Fight</b></p>";
+    $healthClr.forEach(($item) => $item.classList.remove("low", "critical"));
+    startGame();
+  });
 }
+
+preStart();
