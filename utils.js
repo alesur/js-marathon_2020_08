@@ -52,4 +52,4 @@ function renderFightLog(logText, isDisabled) {
   }
 }
 
-export { random, clickCounter, generateLog, renderFightLog };
+export { clickCounter, generateLog, renderFightLog };
